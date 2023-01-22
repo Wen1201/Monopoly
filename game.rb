@@ -3,13 +3,20 @@ require 'pry'
 
 # First step is to load the board.json file into a Ruby variable so I can use it in the game code.
 file = File.read('board.json')
+# add "symbolize_names: true",
+# since board comes from JSON, keys are still strings, and not symbols
 board = JSON.parse(file, symbolize_names: true) 
-puts board
+board.each do |space|
+    if space[:type] == "property"
+      space[:owner] = nil
+    end
+  end
+# puts board
 
 # do the same thing with one of the dice files. 
 file = File.read('rolls_1.json')
 dice_rolls = JSON.parse(file)
-puts dice_rolls
+# puts dice_rolls
 
 # make four player in an array, and each player’s information in a hash
 players = [
