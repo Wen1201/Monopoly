@@ -70,7 +70,7 @@ def move_player( player, dice_roll, board)
     current_space = board[player[:position] % board.length]
     # puts "The player is on #{current_space[:name]}"
     if current_space[:type] == "go"
-        player[:money] += 1 
+        player[:money] += 1 unless player[:position] == 0
     elsif current_space[:type] == "property"
         if current_space[:owner].nil?
             if player[:money] >= current_space[:price]
@@ -114,6 +114,9 @@ dice_rolls.each_with_index do |dice_roll, index|
     move_player(current_player, dice_roll, board)
                 
 end 
+
+
+
 
 
 
