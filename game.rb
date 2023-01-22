@@ -3,7 +3,7 @@ require 'pry'
 
 # First step is to load the board.json file into a Ruby variable so I can use it in the game code.
 file = File.read('board.json')
-board = JSON.parse(file) 
+board = JSON.parse(file, symbolize_names: true) 
 puts board
 
 # do the same thing with one of the dice files. 
