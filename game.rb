@@ -1,16 +1,50 @@
 require 'json'
 require 'pry'
 
-# first step is to load the board.json file into a Ruby variable so I can use it in the game code
+# First step is to load the board.json file into a Ruby variable so I can use it in the game code.
 file = File.read('board.json')
 data_array = JSON.parse(file)
-print data_array
+puts data_array
 
-# do the same thing with one of the dice files - and then how I would iterate over those dice roll numbers and use the rolls to move the players around the board
+# do the same thing with one of the dice files. 
 file = File.read('rolls_1.json')
 dice_rolls = JSON.parse(file)
-print dice_rolls
+puts dice_rolls
+
+# make four player in an array, and each player’s information in a hash
+players = [
+    {
+        name: "Peter",
+        money: 16,
+        properties: [],
+        position: 0
+    },
+    {
+        name: "Billy",
+        money: 16,
+        properties: [],
+        position: 0
+    },
+    {
+        name: "Charlotte",
+        money: 16,
+        properties: [],
+        position: 0
+    },
+    {
+        name: "Sweedal",
+        money: 16,
+        properties: [],
+        position: 0
+    }
+]
 
 
+
+
+  
 require 'pry'
 binding.pry
+
+
+  
