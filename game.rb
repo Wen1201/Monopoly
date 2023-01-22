@@ -46,10 +46,29 @@ players = [
     }
 ]
 
+def check_rent_multiplier(board, current_space)
+    color = current_space[:colour]
+    owner = current_space[:owner]
+
+    # loop over the whole board
+    board.each do |space|
+      # check if the space has the same color as current_space
+      if space[:colour] == color
+        # check if the space has a different owner
+        if space[:owner] != owner
+          # if a space of the same color has a different owner, return 1 (no rent multiplier)
+          return 1
+        end
+      end
+    end
+    # if all spaces of the same color have the same owner, return 2 (rent multiplier)
+    return 2
+  end
+
 def move_player( player, dice_roll, board)
     player[:position] += dice_roll
     current_space = board[player[:position] % board.length]
-    puts "The player is on #{current_space[:name]}"
+    # puts "The player is on #{current_space[:name]}"
     if current_space[:type] == "go"
         player[:money] += 1 
     elsif current_space[:type] == "property"
@@ -64,10 +83,11 @@ def move_player( player, dice_roll, board)
             end
         else
             if current_space[:owner] != player
-                rent = current_space[:rent]
+                rent = current_space[:price]
                 # if the same owner owns all property of the same colour, the rent is doubled
-                if 
-                rent * 2
+                if current_space[:owner]
+                    rent_multiplier = check_rent_multiplier(board, current_space) 
+                    rent *= rent_multiplier
                 end
                 player[:money] -= rent
                 current_space[:owner][:money] += rent
@@ -89,10 +109,10 @@ dice_rolls.each_with_index do |dice_roll, index|
     # players[player_index][:position] += dice_roll
     current_player = players[player_index]
     # puts "#{players[player_index][:name]}: #{players[player_index][:position]}"   
-
+  
     # start defining functions 
     move_player(current_player, dice_roll, board)
-               
+                
 end 
 
 
