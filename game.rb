@@ -39,7 +39,10 @@ players = [
     }
 ]
 
-
+# a loop that prints out both the dice throw from the array, and the index of each throw 
+dice_rolls.each_with_index do |dice_roll, index|
+    puts "dice roll #{player_index}: #{dice_roll}"
+end
 
 
   
