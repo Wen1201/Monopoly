@@ -50,7 +50,34 @@ def move_player( player, dice_roll, board)
     player[:position] += dice_roll
     current_space = board[player[:position] % board.length]
     puts "The player is on #{current_space[:name]}"
-    
+    if current_space[:type] == "go"
+        player[:money] += 1 
+    elsif current_space[:type] == "property"
+        if current_space[:owner].nil?
+            if player[:money] >= current_space[:price]
+                player[:money] -= current_space[:price]
+                current_space[:owner] = player
+                player[:properties] << current_space
+                puts "#{player[:name]} bought #{current_space[:name]}"
+            else
+                puts "#{player[:name]} can't afford #{current_space[:name]}"
+            end
+        else
+            if current_space[:owner] != player
+                rent = current_space[:rent]
+                # if the same owner owns all property of the same colour, the rent is doubled
+                if 
+                rent * 2
+                end
+                player[:money] -= rent
+                current_space[:owner][:money] += rent
+                puts "#{player[:name]} paid #{rent} to #{current_space[:owner][:name]} for landing on #{current_space[:name]}"
+            end
+        end
+    end
+    if player[:money] < 0
+        puts "#{player[:name]} is bankrupt"
+    end
 end
 
 # a loop that prints out both the dice throw from the array, and the index of each throw 
