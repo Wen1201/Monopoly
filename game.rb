@@ -41,11 +41,15 @@ players = [
 
 # a loop that prints out both the dice throw from the array, and the index of each throw 
 dice_rolls.each_with_index do |dice_roll, index|
-    # use index to create a new index into the players so you can take turns from 0,1,2,3 
+    # use index to create a new index into the players so it can take turns from 0,1,2,3 
     # and then "wrap" back to 0,1,2,3
     player_index = index % players.length
-    puts "dice roll #{player_index}: #{dice_roll}"
+    # add the current dice roll to the position of the player at that inedx
+    players[player_index][:position] += dice_roll
+    puts "#{players[player_index][:name]}: #{players[player_index][:position]}"   
 end
+
+
 
 
   
