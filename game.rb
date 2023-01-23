@@ -66,38 +66,47 @@ def check_rent_multiplier(board, current_space)
   end
 
 def move_player( player, dice_roll, board)
-    player[:position] += dice_roll
-    current_space = board[player[:position] % board.length]
-    # puts "The player is on #{current_space[:name]}"
-    if current_space[:type] == "go"
-        player[:money] += 1 unless player[:position] == 0
-    elsif current_space[:type] == "property"
-        if current_space[:owner].nil?
-            if player[:money] >= current_space[:price]
-                player[:money] -= current_space[:price]
-                current_space[:owner] = player
-                player[:properties] << current_space
-                puts "#{player[:name]} bought #{current_space[:name]}"
-            else
-                puts "#{player[:name]} can't afford #{current_space[:name]}"
+    # first store the player's current position in the old_position variable. 2 5
+        old_position = player[:position] % board.length
+        # update the player's position by adding the dice roll to it    12 15 22
+        player[:position] += dice_roll
+        # store the new position in the new_position variable.  2 5 2
+        new_position = player[:position] % board.length
+        current_space = board[player[:position] % board.length]
+        # puts "The player is on #{current_space[:name]}"
+        if current_space[:type] == "go"
+            player[:money] += 1 unless player[:position] == 0
+            if new_position < old_position
+                player[:money] += 1
+                puts "#{player[:name]} passed GO and collected $1"
             end
-        else
-            if current_space[:owner] != player
-                rent = current_space[:price]
-                # if the same owner owns all property of the same colour, the rent is doubled
-                if current_space[:owner]
-                    rent_multiplier = check_rent_multiplier(board, current_space) 
-                    rent *= rent_multiplier
+        elsif current_space[:type] == "property"
+            if current_space[:owner].nil?
+                if player[:money] >= current_space[:price]
+                    player[:money] -= current_space[:price]
+                    current_space[:owner] = player
+                    player[:properties] << current_space
+                    puts "#{player[:name]} bought #{current_space[:name]}"
+                else
+                    puts "#{player[:name]} can't afford #{current_space[:name]}"
                 end
-                player[:money] -= rent
-                current_space[:owner][:money] += rent
-                puts "#{player[:name]} paid #{rent} to #{current_space[:owner][:name]} for landing on #{current_space[:name]}"
+            else
+                if current_space[:owner] != player
+                    rent = current_space[:price]
+                    # if the same owner owns all property of the same colour, the rent is doubled
+                    if current_space[:owner]
+                        rent_multiplier = check_rent_multiplier(board, current_space) 
+                        rent *= rent_multiplier
+                    end
+                    player[:money] -= rent
+                    current_space[:owner][:money] += rent
+                    puts "#{player[:name]} paid #{rent} to #{current_space[:owner][:name]} for landing on #{current_space[:name]}"
+                end
             end
         end
-    end
-    if player[:money] < 0
-        puts "#{player[:name]} is bankrupt"
-    end
+        if player[:money] < 0
+            puts "#{player[:name]} is bankrupt"
+        end
 end
 
 # a loop that prints out both the dice throw from the array, and the index of each throw 
@@ -105,6 +114,7 @@ dice_rolls.each_with_index do |dice_roll, index|
     # use index to create a new index into the players so it can take turns from 0,1,2,3 
     # and then "wrap" back to 0,1,2,3
     player_index = index % players.length
+    # puts "dice roll #{player_index}: #{dice_roll}"
     # add the current dice roll to the position of the player at that inedx
     # players[player_index][:position] += dice_roll
     current_player = players[player_index]
@@ -115,13 +125,18 @@ dice_rolls.each_with_index do |dice_roll, index|
                 
 end 
 
-
-
-
-
-
-
-
+# sort players by money
+players.sort_by! { |player| player[:money] }.reverse!
+# print out the winner and the final scores
+puts "The winner is #{players.first[:name]} with $#{players.first[:money]}"
+puts "Final scores:"
+players.each do |player|
+    if player[:position].nil?
+        player[:position] = 0
+    end
+    player[:position] = player[:position] % board.length
+    puts "#{player[:name]}: $#{player[:money]} (on #{board[player[:position]][:name]})"
+end
   
 require 'pry'
 binding.pry
