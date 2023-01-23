@@ -97,10 +97,14 @@ def move_player( player, dice_roll, board)
                     if current_space[:owner]
                         rent_multiplier = check_rent_multiplier(board, current_space) 
                         rent *= rent_multiplier
+                        if player[:money] >= rent
+                            player[:money] -= rent
+                            current_space[:owner][:money] += rent
+                            puts "#{player[:name]} paid #{rent} to #{current_space[:owner][:name]} for landing on #{current_space[:name]}"
+                        else
+                            puts "#{player[:name]} can't afford to pay #{rent} rent to #{current_space[:owner][:name]} for landing on #{current_space[:name]}"
+                        end
                     end
-                    player[:money] -= rent
-                    current_space[:owner][:money] += rent
-                    puts "#{player[:name]} paid #{rent} to #{current_space[:owner][:name]} for landing on #{current_space[:name]}"
                 end
             end
         end
