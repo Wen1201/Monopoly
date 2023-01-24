@@ -65,6 +65,21 @@ def check_rent_multiplier(board, current_space)
     return 2
   end
 
+  
+def pay_rent(player, board)
+    current_space = board[player[:position] % board.length]
+    if player[:money] >= current_space[:price]
+        player[:money] -= current_space[:price]
+        current_space[:owner] = player
+        player[:properties] << current_space
+        puts "#{player[:name]} bought #{current_space[:name]}"
+        puts "#{player[:name]} has total $#{player[:money]}"
+    else
+        puts "#{player[:name]} can't afford #{current_space[:name]}"
+        exit
+    end
+end
+
 def move_player( player, dice_roll, board)
     # first store the player's current position in the old_position variable. 2 5
         old_position = player[:position] % board.length
@@ -85,16 +100,7 @@ def move_player( player, dice_roll, board)
                 puts "#{player[:name]} has total $#{player[:money]}"
             end
             if current_space[:owner].nil?
-                if player[:money] >= current_space[:price]
-                    player[:money] -= current_space[:price]
-                    current_space[:owner] = player
-                    player[:properties] << current_space
-                    puts "#{player[:name]} bought #{current_space[:name]}"
-                    puts "#{player[:name]} has total $#{player[:money]}"
-                else
-                    puts "#{player[:name]} can't afford #{current_space[:name]}"
-                    exit
-                end
+                pay_rent(player, board)
             else
                 if current_space[:owner] != player
                     rent = current_space[:price]
@@ -122,7 +128,7 @@ def move_player( player, dice_roll, board)
 end
 
 
-# a loop that prints out both the dice throw from the array, and the index of each throw 
+    # a loop that prints out both the dice throw from the array, and the index of each throw 
 dice_rolls.each_with_index do |dice_roll, index|
     # use index to create a new index into the players so it can take turns from 0,1,2,3 
     # and then "wrap" back to 0,1,2,3
@@ -132,24 +138,51 @@ dice_rolls.each_with_index do |dice_roll, index|
     # players[player_index][:position] += dice_roll
     current_player = players[player_index]
     # puts "#{players[player_index][:name]}: #{players[player_index][:position]}"   
-  
+
     # start defining functions 
-    move_player(current_player, dice_roll, board)
-                
+    move_player(current_player, dice_roll, board)              
 end 
 
-# sort players by money
-players.sort_by! { |player| player[:money] }.reverse!
-# print out the winner and the final scores
-puts "The winner is #{players.first[:name]} with $#{players.first[:money]}"
-puts "Final scores:"
-players.each do |player|
-    if player[:position].nil?
-        player[:position] = 0
+
+def game_over
+    players.each do |player|
+      if player[:position].nil?
+          player[:position] = 0
+      end
+      player[:position] = player[:position] % board.length
     end
-    player[:position] = player[:position] % board.length
-    puts "#{player[:name]}: $#{player[:money]} (on #{board[player[:position]][:name]})"
-end
+    players.sort_by! { |player| player[:money] }.reverse!
+    puts "The winner is #{players.first[:name]} with $#{players.first[:money]}"
+    puts "Final scores:"
+    players.each do |player|
+      puts "#{player[:name]}: $#{player[:money]} (on #{board[player[:position]][:name]})"
+    end
+  end
+
+  
+  
+  
+  
+  
+
+# # sort players by money
+# players.sort_by! { |player| player[:money] }.reverse!
+# # print out the winner and the final scores
+# puts "The winner is #{players.first[:name]} with $#{players.first[:money]}"
+# puts "Final scores:"
+# players.each do |player|
+#     if player[:position].nil?
+#         player[:position] = 0
+#     end
+#     player[:position] = player[:position] % board.length
+#     puts "#{player[:name]}: $#{player[:money]} (on #{board[player[:position]][:name]})"
+# end
+
+  
+  
+  
+  
+  
   
 require 'pry'
 binding.pry
