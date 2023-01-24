@@ -80,7 +80,7 @@ def check_rent_multiplier(board, current_space)
     end
 end 
 
-def buy_property(player, board)
+def buy_property(player, board, players)
     current_space = board[player[:position] % board.length]
     if player[:money] >= current_space[:price]
         player[:money] -= current_space[:price]
@@ -91,12 +91,12 @@ def buy_property(player, board)
     else
         puts "#{player[:name]} can't afford #{current_space[:name]}"
         game_over(players, board)
-        # exit
+        exit
     end
 end
 
 #  check if the same owner owns all property of the same colour, the rent is doubled
-def pay__double_rent(player, board)
+def pay__double_rent(player, board, players)
     current_space = board[player[:position] % board.length]
     rent = current_space[:price]
     if current_space[:owner]
@@ -111,13 +111,13 @@ def pay__double_rent(player, board)
             puts "#{player[:name]} can't afford to pay #{rent} rent to #{current_space[:owner][:name]} for landing on #{current_space[:name]}"
             puts "#{player[:name]} is bankrupt, Game Over"
             game_over(players, board)
-            # exit
+            exit
         end
     end
 end
 
 game_over = false
-def move_player( player, dice_roll, board) 
+def move_player( player, dice_roll, board, players) 
     # first store the player's current position in the old_position variable. 2 5
         old_position = player[:position] % board.length
         # update the player's position by adding the dice roll to it    12 15 22
@@ -137,10 +137,10 @@ def move_player( player, dice_roll, board)
                 puts "#{player[:name]} has total $#{player[:money]}"
             end
             if current_space[:owner].nil?
-                buy_property(player, board)
+                buy_property(player, board, players)
             else
                 if current_space[:owner] != player
-                    pay__double_rent(player, board)
+                    pay__double_rent(player, board, players)
                 end
             end
         end
@@ -166,7 +166,7 @@ dice_rolls.each_with_index do |dice_roll, index|
     # puts "#{players[player_index][:name]}: #{players[player_index][:position]}"   
     
     # start defining functions 
-    move_player(current_player, dice_roll, board)    
+    move_player(current_player, dice_roll, board, players)    
              
 end 
 
