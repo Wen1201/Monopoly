@@ -65,7 +65,21 @@ def check_rent_multiplier(board, current_space)
     return 2
   end
 
-  
+def game_over(players)
+    players.each do |player|
+        if player[:position].nil?
+            player[:position] = 0
+        end
+        player[:position] = player[:position] % board.length
+    end
+    players.sort_by! { |player| player[:money] }.reverse!
+    puts "The winner is #{players.first[:name]} with $#{players.first[:money]}"
+    puts "Final scores:"
+    players.each do |player|
+        puts "#{player[:name]}: $#{player[:money]} (on #{board[player[:position]][:name]})"
+    end
+end 
+
 def pay_rent(player, board)
     current_space = board[player[:position] % board.length]
     if player[:money] >= current_space[:price]
@@ -77,6 +91,26 @@ def pay_rent(player, board)
     else
         puts "#{player[:name]} can't afford #{current_space[:name]}"
         exit
+    end
+end
+
+  
+def pay__double_rent(player, board)
+    current_space = board[player[:position] % board.length]
+    rent = current_space[:price]
+    if current_space[:owner]
+        rent_multiplier = check_rent_multiplier(board, current_space) 
+        rent *= rent_multiplier
+        if player[:money] >= rent
+            player[:money] -= rent
+            current_space[:owner][:money] += rent
+            puts "#{player[:name]} paid #{rent} to #{current_space[:owner][:name]} for landing on #{current_space[:name]}, #{player[:name]} has total $#{player[:money]}"
+            puts "#{current_space[:owner][:name]} has total $#{current_space[:owner][:money]}"
+        else
+            puts "#{player[:name]} can't afford to pay #{rent} rent to #{current_space[:owner][:name]} for landing on #{current_space[:name]}"
+            puts "#{player[:name]} is bankrupt, Game Over"
+            exit
+        end
     end
 end
 
@@ -103,22 +137,7 @@ def move_player( player, dice_roll, board)
                 pay_rent(player, board)
             else
                 if current_space[:owner] != player
-                    rent = current_space[:price]
-                    # if the same owner owns all property of the same colour, the rent is doubled
-                    if current_space[:owner]
-                        rent_multiplier = check_rent_multiplier(board, current_space) 
-                        rent *= rent_multiplier
-                        if player[:money] >= rent
-                            player[:money] -= rent
-                            current_space[:owner][:money] += rent
-                            puts "#{player[:name]} paid #{rent} to #{current_space[:owner][:name]} for landing on #{current_space[:name]}, #{player[:name]} has total $#{player[:money]}"
-                            puts "#{current_space[:owner][:name]} has total $#{current_space[:owner][:money]}"
-                        else
-                            puts "#{player[:name]} can't afford to pay #{rent} rent to #{current_space[:owner][:name]} for landing on #{current_space[:name]}"
-                            puts "#{player[:name]} is bankrupt, Game Over"
-                            exit
-                        end
-                    end
+                    pay__double_rent(player, board)
                 end
             end
         end
@@ -144,20 +163,7 @@ dice_rolls.each_with_index do |dice_roll, index|
 end 
 
 
-def game_over
-    players.each do |player|
-      if player[:position].nil?
-          player[:position] = 0
-      end
-      player[:position] = player[:position] % board.length
-    end
-    players.sort_by! { |player| player[:money] }.reverse!
-    puts "The winner is #{players.first[:name]} with $#{players.first[:money]}"
-    puts "Final scores:"
-    players.each do |player|
-      puts "#{player[:name]}: $#{player[:money]} (on #{board[player[:position]][:name]})"
-    end
-  end
+
 
   
   
