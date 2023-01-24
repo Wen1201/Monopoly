@@ -76,19 +76,24 @@ def move_player( player, dice_roll, board)
         # puts "The player is on #{current_space[:name]}"
         if current_space[:type] == "go"
             player[:money] += 1 unless player[:position] == 0
+            puts "#{player[:name]} load on GO and collected $1"
+            puts "#{player[:name]} has total $#{player[:money]}"
+        elsif current_space[:type] == "property"
             if new_position < old_position
                 player[:money] += 1
                 puts "#{player[:name]} passed GO and collected $1"
+                puts "#{player[:name]} has total $#{player[:money]}"
             end
-        elsif current_space[:type] == "property"
             if current_space[:owner].nil?
                 if player[:money] >= current_space[:price]
                     player[:money] -= current_space[:price]
                     current_space[:owner] = player
                     player[:properties] << current_space
                     puts "#{player[:name]} bought #{current_space[:name]}"
+                    puts "#{player[:name]} has total $#{player[:money]}"
                 else
                     puts "#{player[:name]} can't afford #{current_space[:name]}"
+                    exit
                 end
             else
                 if current_space[:owner] != player
@@ -100,9 +105,12 @@ def move_player( player, dice_roll, board)
                         if player[:money] >= rent
                             player[:money] -= rent
                             current_space[:owner][:money] += rent
-                            puts "#{player[:name]} paid #{rent} to #{current_space[:owner][:name]} for landing on #{current_space[:name]}"
+                            puts "#{player[:name]} paid #{rent} to #{current_space[:owner][:name]} for landing on #{current_space[:name]}, #{player[:name]} has total $#{player[:money]}"
+                            puts "#{current_space[:owner][:name]} has total $#{current_space[:owner][:money]}"
                         else
                             puts "#{player[:name]} can't afford to pay #{rent} rent to #{current_space[:owner][:name]} for landing on #{current_space[:name]}"
+                            puts "#{player[:name]} is bankrupt, Game Over"
+                            exit
                         end
                     end
                 end
@@ -112,6 +120,7 @@ def move_player( player, dice_roll, board)
             puts "#{player[:name]} is bankrupt"
         end
 end
+
 
 # a loop that prints out both the dice throw from the array, and the index of each throw 
 dice_rolls.each_with_index do |dice_roll, index|
