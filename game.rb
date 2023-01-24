@@ -65,7 +65,7 @@ def check_rent_multiplier(board, current_space)
     return 2
   end
 
-def game_over(players)
+  def game_over(players, board)
     players.each do |player|
         if player[:position].nil?
             player[:position] = 0
@@ -80,7 +80,7 @@ def game_over(players)
     end
 end 
 
-def pay_rent(player, board)
+def buy_property(player, board)
     current_space = board[player[:position] % board.length]
     if player[:money] >= current_space[:price]
         player[:money] -= current_space[:price]
@@ -90,11 +90,12 @@ def pay_rent(player, board)
         puts "#{player[:name]} has total $#{player[:money]}"
     else
         puts "#{player[:name]} can't afford #{current_space[:name]}"
-        exit
+        game_over(players, board)
+        # exit
     end
 end
 
-  
+#  check if the same owner owns all property of the same colour, the rent is doubled
 def pay__double_rent(player, board)
     current_space = board[player[:position] % board.length]
     rent = current_space[:price]
@@ -109,12 +110,14 @@ def pay__double_rent(player, board)
         else
             puts "#{player[:name]} can't afford to pay #{rent} rent to #{current_space[:owner][:name]} for landing on #{current_space[:name]}"
             puts "#{player[:name]} is bankrupt, Game Over"
-            exit
+            game_over(players, board)
+            # exit
         end
     end
 end
 
-def move_player( player, dice_roll, board)
+game_over = false
+def move_player( player, dice_roll, board) 
     # first store the player's current position in the old_position variable. 2 5
         old_position = player[:position] % board.length
         # update the player's position by adding the dice roll to it    12 15 22
@@ -134,7 +137,7 @@ def move_player( player, dice_roll, board)
                 puts "#{player[:name]} has total $#{player[:money]}"
             end
             if current_space[:owner].nil?
-                pay_rent(player, board)
+                buy_property(player, board)
             else
                 if current_space[:owner] != player
                     pay__double_rent(player, board)
@@ -146,6 +149,10 @@ def move_player( player, dice_roll, board)
         end
 end
 
+# if game_over
+#     game_over(players, board)
+#     exit
+# end
 
     # a loop that prints out both the dice throw from the array, and the index of each throw 
 dice_rolls.each_with_index do |dice_roll, index|
@@ -157,9 +164,10 @@ dice_rolls.each_with_index do |dice_roll, index|
     # players[player_index][:position] += dice_roll
     current_player = players[player_index]
     # puts "#{players[player_index][:name]}: #{players[player_index][:position]}"   
-
+    
     # start defining functions 
-    move_player(current_player, dice_roll, board)              
+    move_player(current_player, dice_roll, board)    
+             
 end 
 
 
